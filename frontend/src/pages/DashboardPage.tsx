@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Banknote, Receipt, Utensils, Percent, AlertTriangle, PackageX, TrendingUp } from 'lucide-react'
 import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
+  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
 } from 'recharts'
 import { useDashboard, usePosData } from '@/hooks/useData'
 import { LoadingBlock, Money, StatusBadge } from '@/components/shared'
@@ -94,17 +94,36 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="h-64 px-2">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.hourly_sales} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
+              <AreaChart data={data.hourly_sales} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="hourlySalesGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="label" tick={{ fontSize: 11 }} interval={2} />
                 <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                 <Tooltip
-                  cursor={{ fill: 'hsl(var(--muted) / 0.4)' }}
                   formatter={(value) => [value, 'Sales']}
-                  labelStyle={{ fontSize: 12 }}
+                  labelStyle={{ fontSize: 12, fontWeight: 600 }}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    borderColor: 'hsl(var(--border))',
+                    borderRadius: '8px',
+                  }}
                 />
-                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-              </BarChart>
+                <Area
+                  type="monotone"
+                  dataKey="count"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2.5}
+                  fillOpacity={1}
+                  fill="url(#hourlySalesGrad)"
+                  dot={{ r: 3, fill: 'hsl(var(--primary))' }}
+                  activeDot={{ r: 6, strokeWidth: 2 }}
+                />
+              </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
