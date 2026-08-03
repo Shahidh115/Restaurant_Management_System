@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('tax_amount', 12, 2)->default(0);
             $table->decimal('total', 12, 2)->default(0);
             $table->string('payment_type')->default('cash'); // cash | card | other
+            $table->string('customer_phone')->nullable();
             $table->string('note')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('cancelled_at')->nullable();

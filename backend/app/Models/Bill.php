@@ -27,6 +27,7 @@ class Bill extends Model
         'tax_amount',
         'total',
         'payment_type',
+        'customer_phone',
         'note',
         'completed_at',
         'cancelled_at',

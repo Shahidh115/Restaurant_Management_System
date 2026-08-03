@@ -51,12 +51,26 @@ function ThemeToggle() {
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { data: settings } = useSettings()
+  const logoUrl = settings?.logo_path ? (
+    settings.logo_path.startsWith('http')
+      ? settings.logo_path
+      : `/storage/${settings.logo_path.replace(/^\/+/, '').replace(/^storage\//, '')}`
+  ) : null
+
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 px-5 py-5">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-lg font-bold text-primary-foreground">
-          {settings?.restaurant_name?.charAt(0) ?? 'E'}
-        </div>
+      <div className="flex items-center gap-2.5 px-5 py-5">
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt="Logo"
+            className="size-9 rounded-lg border bg-white p-0.5 object-contain shadow-sm"
+          />
+        ) : (
+          <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-lg font-bold text-primary-foreground">
+            {settings?.restaurant_name?.charAt(0) ?? 'E'}
+          </div>
+        )}
         <div className="leading-tight">
           <div className="text-sm font-semibold text-sidebar-foreground">
             {settings?.restaurant_name ?? 'EL CASA'}

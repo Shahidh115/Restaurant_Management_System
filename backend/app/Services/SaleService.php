@@ -65,6 +65,7 @@ class SaleService
                 status: Bill::STATUS_COMPLETED,
                 discount: (float) ($payload['discount'] ?? 0),
                 paymentType: $payload['payment_type'] ?? Bill::PAYMENT_CASH,
+                customerPhone: $payload['customer_phone'] ?? null,
                 note: $payload['note'] ?? null,
                 date: $payload['bill_date'] ?? null,
             );
@@ -79,6 +80,7 @@ class SaleService
                 status: Bill::STATUS_HOLD,
                 discount: (float) ($payload['discount'] ?? 0),
                 paymentType: $payload['payment_type'] ?? Bill::PAYMENT_CASH,
+                customerPhone: $payload['customer_phone'] ?? null,
                 note: $payload['note'] ?? null,
             );
         });
@@ -116,6 +118,7 @@ class SaleService
                 status: Bill::STATUS_COMPLETED,
                 discount: (float) ($payload['discount'] ?? 0),
                 paymentType: $payload['payment_type'] ?? Bill::PAYMENT_CASH,
+                customerPhone: $payload['customer_phone'] ?? null,
                 note: $payload['note'] ?? null,
                 existingBill: $bill,
             );
@@ -168,11 +171,10 @@ class SaleService
                         'quantity' => $restoreQty,
                         'balance_after' => $balanceAfter,
                         'reference_type' => 'bill',
-                        'reference_id' => $item->bill_id,
-                        'note' => 'Restored after cancellation of '.$bill->invoice_number,
+                        'reference_id' => $bill->id,
                     ]);
 
-                    $resource->update(['current_balance' => $balanceAfter]);
+                    $resource->increment('current_balance', $restoreQty);
                 });
             });
 
@@ -190,6 +192,7 @@ class SaleService
         string $status,
         float $discount,
         string $paymentType,
+        ?string $customerPhone,
         ?string $note,
         ?Bill $existingBill = null,
         ?string $date = null,
@@ -235,6 +238,7 @@ class SaleService
             'tax_amount' => $taxAmount,
             'total' => $total,
             'payment_type' => $paymentType,
+            'customer_phone' => $customerPhone,
             'note' => $note,
             'completed_at' => $status === Bill::STATUS_COMPLETED ? now() : null,
         ];

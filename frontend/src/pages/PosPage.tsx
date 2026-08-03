@@ -26,6 +26,7 @@ type SalePayload = {
   items: { menu_item_id: number; quantity: number }[]
   discount: number
   payment_type: string
+  customer_phone?: string
 }
 
 function CategoryTabs({
@@ -114,6 +115,7 @@ export default function PosPage() {
   const [barcode, setBarcode] = useState('')
   const [paymentType, setPaymentType] = useState(cart.paymentType)
   const [discount, setDiscount] = useState(cart.discount.toString())
+  const [customerPhone, setCustomerPhone] = useState('')
   const [receipt, setReceipt] = useState<Bill | null>(null)
   const [holding, setHolding] = useState<string | null>(null)
 
@@ -148,6 +150,7 @@ export default function PosPage() {
     return items
   }, [posData, category, search])
 
+
   const saleMutation = useMutation({
     mutationFn: async (payload: SalePayload) => {
       const res = await api.post<{ data: Bill }>('/pos/sale', payload)
@@ -158,6 +161,7 @@ export default function PosPage() {
       setReceipt(bill)
       cart.clear()
       setDiscount('')
+      setCustomerPhone('')
       invalidatePos()
     },
     onError: (e: { message: string; data?: unknown }) => {
@@ -175,6 +179,7 @@ export default function PosPage() {
       toast.success(`Order held · ${res.hold_code}`)
       cart.clear()
       setDiscount('')
+      setCustomerPhone('')
     },
     onError: (e: { message: string }) => toast.error(e.message),
   })
@@ -415,6 +420,16 @@ export default function PosPage() {
               </div>
             </div>
 
+            <div>
+              <div className="mb-1 text-xs font-medium text-muted-foreground">Mobile No. (Optional)</div>
+              <Input
+                type="tel"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                placeholder="e.g. +94 77 123 4567"
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-2 pt-1">
               <Button
                 variant="outline"
@@ -424,6 +439,7 @@ export default function PosPage() {
                     items: cartLines.map((l) => ({ menu_item_id: l.menu_item_id, quantity: l.quantity })),
                     discount: discountNum,
                     payment_type: paymentType,
+                    customer_phone: customerPhone.trim() || undefined,
                   })
                 }
               >
@@ -436,6 +452,7 @@ export default function PosPage() {
                     items: cartLines.map((l) => ({ menu_item_id: l.menu_item_id, quantity: l.quantity })),
                     discount: discountNum,
                     payment_type: paymentType,
+                    customer_phone: customerPhone.trim() || undefined,
                   }
                   if (activeHold) completeHoldMutation.mutate({ code: activeHold.hold_code!, payload })
                   else saleMutation.mutate(payload)

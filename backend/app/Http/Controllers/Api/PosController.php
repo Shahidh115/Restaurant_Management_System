@@ -198,6 +198,7 @@ class PosController extends Controller
             'items.*.quantity' => ['required', 'numeric', 'gt:0'],
             'discount' => ['nullable', 'numeric', 'min:0'],
             'payment_type' => ['nullable', 'string', 'in:cash,card,other'],
+            'customer_phone' => ['nullable', 'string', 'max:50'],
             'note' => ['nullable', 'string', 'max:500'],
         ]);
 
@@ -205,6 +206,7 @@ class PosController extends Controller
             'items' => $data['items'],
             'discount' => $data['discount'] ?? 0,
             'payment_type' => $data['payment_type'] ?? 'cash',
+            'customer_phone' => $data['customer_phone'] ?? null,
             'note' => $data['note'] ?? null,
         ];
     }

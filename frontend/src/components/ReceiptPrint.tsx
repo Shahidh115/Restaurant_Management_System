@@ -41,6 +41,11 @@ export function ReceiptPrint({ bill }: ReceiptPrintProps) {
           <div className="pt-1 text-xs font-semibold text-primary">
             Invoice: {bill.invoice_number}
           </div>
+          {bill.customer_phone && (
+            <div className="text-xs text-muted-foreground">
+              Mobile: <span className="font-semibold text-foreground">{bill.customer_phone}</span>
+            </div>
+          )}
           <div className="text-xs text-muted-foreground">
             Date: {formatDateTime(bill.created_at)}
           </div>
@@ -128,6 +133,7 @@ export function ReceiptPrint({ bill }: ReceiptPrintProps) {
           {settings?.receipt_header && <div className="text-xs whitespace-pre-line">{settings.receipt_header}</div>}
           <div className="my-1">================================</div>
           <div>INVOICE #: {bill.invoice_number}</div>
+          {bill.customer_phone && <div>MOBILE: {bill.customer_phone}</div>}
           <div>DATE: {formatDateTime(bill.created_at)}</div>
           <div>================================</div>
         </div>

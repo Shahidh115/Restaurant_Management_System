@@ -288,6 +288,7 @@ class ReportService
             'tax_amount' => (float) $bill->tax_amount,
             'total' => (float) $bill->total,
             'payment_type' => $bill->payment_type,
+            'customer_phone' => $bill->customer_phone,
             'item_count' => $bill->items->sum(fn ($item) => (float) $item->quantity),
             'created_at' => $bill->created_at?->toIso8601String(),
             'items' => $bill->items->map(fn (BillItem $item) => [

@@ -77,6 +77,7 @@ export interface Bill {
   tax_amount: number
   total: number
   payment_type: string
+  customer_phone?: string | null
   item_count: number
   created_at: string
   items: BillItem[]
