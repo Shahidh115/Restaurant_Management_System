@@ -161,15 +161,26 @@ class ProductionService
 
     public function resetAll(?string $date = null): void
     {
-        $date = $date ?? now()->toDateString();
+        $date = $date ? \Illuminate\Support\Carbon::parse($date)->toDateString() : now()->toDateString();
 
         DB::transaction(function () use ($date) {
             $resources = $this->resources->activeOrdered();
             foreach ($resources as $resource) {
-                DailyProduction::updateOrCreate(
-                    ['date' => $date, 'production_resource_id' => $resource->id],
-                    ['opening_quantity' => 0]
-                );
+                $dailyProduction = DailyProduction::query()
+                    ->whereDate('date', $date)
+                    ->where('production_resource_id', $resource->id)
+                    ->first();
+
+                if ($dailyProduction) {
+                    $dailyProduction->update(['opening_quantity' => 0]);
+                } else {
+                    DailyProduction::create([
+                        'date' => $date,
+                        'production_resource_id' => $resource->id,
+                        'opening_quantity' => 0,
+                    ]);
+                }
+
                 $resource->update(['current_balance' => 0]);
             }
         });

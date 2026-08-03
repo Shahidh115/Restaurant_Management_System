@@ -18,9 +18,14 @@ class DailyProduction extends Model
     protected function casts(): array
     {
         return [
-            'date' => 'date',
+            'date' => 'date:Y-m-d',
             'opening_quantity' => 'decimal:3',
         ];
+    }
+
+    public function setDateAttribute($value): void
+    {
+        $this->attributes['date'] = $value ? \Illuminate\Support\Carbon::parse($value)->toDateString() : null;
     }
 
     public function resource(): BelongsTo
