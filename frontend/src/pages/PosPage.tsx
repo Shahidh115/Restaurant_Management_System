@@ -58,36 +58,48 @@ function ItemGrid({
 }) {
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
-      {items.map((item) => (
-        <button
-          key={item.id}
-          type="button"
-          onClick={() => onAdd(item)}
-          disabled={item.max_preparable <= 0}
-          className={cn(
-            'group flex flex-col rounded-xl border bg-card p-3 text-left transition-colors',
-            item.max_preparable <= 0
-              ? 'cursor-not-allowed opacity-50'
-              : 'hover:border-primary/60 hover:bg-accent'
-          )}
-        >
-          {item.is_favourite && <Badge variant="warning" className="mb-1 w-fit">★</Badge>}
-          <div className="flex size-14 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-            {item.image_url ? (
-              <img src={item.image_url} alt={item.name} className="size-full rounded-lg object-cover" />
-            ) : (
-              <ReceiptText className="size-6" />
+      {items.map((item) => {
+        const isLow = item.max_preparable <= 5
+        const isOut = item.max_preparable <= 0
+
+        return (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onAdd(item)}
+            disabled={isOut}
+            className={cn(
+              'group flex flex-col rounded-xl border p-3 text-left transition-all relative overflow-hidden',
+              isOut
+                ? 'cursor-not-allowed border-2 border-red-500/80 bg-red-500/10 text-red-500 opacity-70'
+                : isLow
+                  ? 'border-2 border-red-500 bg-red-500/5 shadow-[0_0_10px_rgba(239,68,68,0.25)] hover:bg-red-500/10'
+                  : 'bg-card hover:border-primary/60 hover:bg-accent'
             )}
-          </div>
-          <div className="mt-2 truncate text-sm font-medium">{item.name}</div>
-          <div className="mt-1 flex items-center justify-between">
-            <Money value={item.price} className="text-xs" />
-            <span className="text-[11px] text-muted-foreground">
-              {item.max_preparable > 0 ? `×${item.max_preparable}` : 'Sold out'}
-            </span>
-          </div>
-        </button>
-      ))}
+          >
+            {isLow && (
+              <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl-lg shadow-sm">
+                {isOut ? 'SOLD OUT' : 'LOW STOCK'}
+              </div>
+            )}
+            {item.is_favourite && <Badge variant="warning" className="mb-1 w-fit">★</Badge>}
+            <div className="flex size-14 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+              {item.image_url ? (
+                <img src={item.image_url} alt={item.name} className="size-full rounded-lg object-cover" />
+              ) : (
+                <ReceiptText className="size-6" />
+              )}
+            </div>
+            <div className="mt-2 truncate text-sm font-medium">{item.name}</div>
+            <div className="mt-1 flex items-center justify-between">
+              <Money value={item.price} className="text-xs" />
+              <span className={cn('text-[11px] font-semibold', isLow ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground')}>
+                {item.max_preparable > 0 ? `×${item.max_preparable}` : 'Sold out'}
+              </span>
+            </div>
+          </button>
+        )
+      })}
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Plus, History, AlertTriangle, Factory } from 'lucide-react'
 import { api } from '@/lib/api'
-import { todayISO } from '@/lib/utils'
+import { todayISO, cn } from '@/lib/utils'
 import { usePosData } from '@/hooks/useData'
 import {
   PageHeader, LoadingBlock, ConfirmDialog, EmptyState, Button,
@@ -215,7 +215,12 @@ export default function ProductionPage() {
                     const qtyVal = openings[r.id] ?? String(r.opening_quantity ?? 0)
                     const numVal = Number(openings[r.id] ?? r.opening_quantity ?? 0)
                     return (
-                      <TableRow key={r.id}>
+                      <TableRow
+                        key={r.id}
+                        className={cn(
+                          r.is_low && 'border-l-4 border-l-red-500 border-red-500/60 bg-red-500/10 shadow-[inset_0_0_0_1px_rgba(239,68,68,0.4)]'
+                        )}
+                      >
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <span className="font-semibold text-foreground">{r.name}</span>

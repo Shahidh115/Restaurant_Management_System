@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Plus, Pencil, Archive, RotateCcw, SlidersHorizontal } from 'lucide-react'
 import { api } from '@/lib/api'
+import { cn } from '@/lib/utils'
 import type { ProductionResource } from '@/types'
 import { PageHeader, ConfirmDialog, LoadingBlock, EmptyState, Button } from '@/components/shared'
 import {
@@ -136,7 +137,12 @@ export default function ResourcesPage() {
             </TableHeader>
             <TableBody>
               {resources?.map((r) => (
-                <TableRow key={r.id}>
+                <TableRow
+                  key={r.id}
+                  className={cn(
+                    r.is_low && 'border-l-4 border-l-red-500 border-red-500/60 bg-red-500/10 shadow-[inset_0_0_0_1px_rgba(239,68,68,0.4)]'
+                  )}
+                >
                   <TableCell className="font-medium">{r.name}</TableCell>
                   <TableCell className="text-muted-foreground">{r.unit}</TableCell>
                   <TableCell>
