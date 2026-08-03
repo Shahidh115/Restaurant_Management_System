@@ -39,6 +39,7 @@ Route::prefix('v1')->group(function () {
     Route::post('production/opening', [ProductionController::class, 'setOpening']);
     Route::post('production/add', [ProductionController::class, 'add']);
     Route::post('production/resources/{resourceId}/quick-add', [ProductionController::class, 'quickAdd']);
+    Route::post('production/reset-all', [ProductionController::class, 'resetAll']);
 
     // Categories
     Route::get('categories', [CategoryController::class, 'index']);

@@ -87,4 +87,12 @@ class ProductionController extends Controller
             'current_balance' => (float) $resource->current_balance,
         ], 'Production added.');
     }
+
+    public function resetAll(Request $request)
+    {
+        $date = $request->input('date') ?? today()->toDateString();
+        $this->service->resetAll($date);
+
+        return ApiResponse::success(null, 'Daily production reset to 0.');
+    }
 }

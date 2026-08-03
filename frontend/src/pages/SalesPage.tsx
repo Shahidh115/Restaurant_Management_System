@@ -36,6 +36,7 @@ export default function SalesPage() {
       return res.data.data
     },
     placeholderData: (prev) => prev,
+    refetchInterval: 5_000,
   })
 
   const cancelMutation = useMutation({
@@ -60,13 +61,20 @@ export default function SalesPage() {
         description="Browse and manage bills."
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <Input
-              type="date"
-              value={date}
-              onChange={(e) => { setDate(e.target.value); setPage(1) }}
-              className="w-40"
-              aria-label="Bill date"
-            />
+            <div className="flex items-center gap-1">
+              <Input
+                type="date"
+                value={date}
+                onChange={(e) => { setDate(e.target.value); setPage(1) }}
+                className="w-40"
+                aria-label="Bill date"
+              />
+              {date && (
+                <Button variant="ghost" size="icon-sm" onClick={() => { setDate(''); setPage(1) }} title="All dates">
+                  <X className="size-3.5" />
+                </Button>
+              )}
+            </div>
             <div className="relative">
               <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input

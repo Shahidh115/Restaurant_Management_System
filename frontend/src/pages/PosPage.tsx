@@ -122,6 +122,7 @@ export default function PosPage() {
   const invalidatePos = () => {
     queryClient.invalidateQueries({ queryKey: ['pos-data'] })
     queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    queryClient.invalidateQueries({ queryKey: ['bills'] })
   }
 
   const subtotal = cartTotal(cart.lines)

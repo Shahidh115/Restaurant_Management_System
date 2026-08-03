@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { Plus, History, AlertTriangle, Factory } from 'lucide-react'
+import { Plus, History, AlertTriangle, Factory, RotateCcw } from 'lucide-react'
 import { api } from '@/lib/api'
 import { todayISO, cn } from '@/lib/utils'
 import { usePosData } from '@/hooks/useData'
@@ -55,6 +55,7 @@ export default function ProductionPage() {
   const [customAdd, setCustomAdd] = useState<{ resourceId: number; name: string; unit: string } | null>(null)
   const [customQty, setCustomQty] = useState('')
   const [confirmReset, setConfirmReset] = useState<number | null>(null)
+  const [confirmResetAll, setConfirmResetAll] = useState(false)
 
   const { data: posData, isLoading: posLoading, isError: posError } = usePosData()
   const resources = posData?.resources ?? []
@@ -130,6 +131,19 @@ export default function ProductionPage() {
     onError: (e: { message: string }) => toast.error(e.message),
   })
 
+  const resetAllMutation = useMutation({
+    mutationFn: async () => {
+      await api.post('/production/reset-all', { date })
+    },
+    onSuccess: () => {
+      toast.success('All daily production reset to 0')
+      setConfirmResetAll(false)
+      setOpenings({})
+      invalidate()
+    },
+    onError: (e: { message: string }) => toast.error(e.message),
+  })
+
   const merged = useMemo(() => {
     if (!resources.length) return []
     const openingMap = new Map(openingData?.map((r) => [r.resource_id, r]) ?? [])
@@ -178,13 +192,23 @@ export default function ProductionPage() {
         title="Daily Production"
         description="Set opening stock and record production batches."
         actions={
-          <Input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-44"
-            aria-label="Production date"
-          />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-destructive/40 text-destructive hover:bg-destructive/10"
+              onClick={() => setConfirmResetAll(true)}
+            >
+              <RotateCcw className="size-3.5" /> Everyday Reset
+            </Button>
+            <Input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-44"
+              aria-label="Production date"
+            />
+          </div>
         }
       />
 
@@ -372,6 +396,17 @@ export default function ProductionPage() {
         destructive
         loading={resetOpeningMutation.isPending}
         onConfirm={() => confirmReset && resetOpeningMutation.mutate(confirmReset)}
+      />
+
+      <ConfirmDialog
+        open={confirmResetAll}
+        onOpenChange={setConfirmResetAll}
+        title="Reset all daily production?"
+        description={`This will reset all production resource opening balances and live stock balances to 0 for ${date}.`}
+        confirmLabel="Reset All to 0"
+        destructive
+        loading={resetAllMutation.isPending}
+        onConfirm={() => resetAllMutation.mutate()}
       />
     </div>
   )

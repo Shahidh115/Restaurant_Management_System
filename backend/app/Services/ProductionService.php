@@ -158,4 +158,20 @@ class ProductionService
 
         return $openings->concat($adjustments)->sortByDesc('created_at')->values();
     }
+
+    public function resetAll(?string $date = null): void
+    {
+        $date = $date ?? now()->toDateString();
+
+        DB::transaction(function () use ($date) {
+            $resources = $this->resources->activeOrdered();
+            foreach ($resources as $resource) {
+                DailyProduction::updateOrCreate(
+                    ['date' => $date, 'production_resource_id' => $resource->id],
+                    ['opening_quantity' => 0]
+                );
+                $resource->update(['current_balance' => 0]);
+            }
+        });
+    }
 }
