@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+**/node_modules/
+backend/vendor/
+
+# Builds & Outputs
+frontend/dist/
+frontend/dist-ssr/
+backend/public/storage
+
+# Environment & Local Configuration
+backend/.env
+backend/.env.backup
+backend/.env.production
+*.local
+
+# Database & Storage
+backend/database/*.sqlite
+backend/database/*.sqlite-journal
+backend/storage/app/public/*
+!backend/storage/app/public/.gitignore
+backend/storage/framework/cache/*
+!backend/storage/framework/cache/.gitignore
+backend/storage/framework/sessions/*
+!backend/storage/framework/sessions/.gitignore
+backend/storage/framework/views/*
+!backend/storage/framework/views/.gitignore
+backend/storage/logs/*
+!backend/storage/logs/.gitignore
+
+# System & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
