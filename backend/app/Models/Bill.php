@@ -36,7 +36,7 @@ class Bill extends Model
     protected function casts(): array
     {
         return [
-            'bill_date' => 'date',
+            'bill_date' => 'date:Y-m-d',
             'subtotal' => 'decimal:2',
             'discount' => 'decimal:2',
             'tax_rate' => 'decimal:2',
@@ -45,6 +45,11 @@ class Bill extends Model
             'completed_at' => 'datetime',
             'cancelled_at' => 'datetime',
         ];
+    }
+
+    public function setBillDateAttribute($value): void
+    {
+        $this->attributes['bill_date'] = $value ? \Illuminate\Support\Carbon::parse($value)->toDateString() : null;
     }
 
     public function items(): HasMany

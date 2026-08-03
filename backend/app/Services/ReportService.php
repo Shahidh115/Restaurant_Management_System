@@ -280,6 +280,7 @@ class ReportService
         return [
             'id' => $bill->id,
             'invoice_number' => $bill->invoice_number,
+            'bill_date' => $bill->bill_date ? \Illuminate\Support\Carbon::parse($bill->bill_date)->toDateString() : null,
             'status' => $bill->status,
             'hold_code' => $bill->hold_code,
             'subtotal' => (float) $bill->subtotal,

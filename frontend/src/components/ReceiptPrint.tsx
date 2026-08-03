@@ -3,7 +3,7 @@ import type { Bill } from '@/types'
 import { useSettings } from '@/hooks/useData'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { formatMoney, formatDateTime } from '@/lib/utils'
+import { formatMoney, formatDateTime, cn } from '@/lib/utils'
 
 interface ReceiptPrintProps {
   bill: Bill
@@ -17,7 +17,11 @@ export function ReceiptPrint({ bill }: ReceiptPrintProps) {
     window.print()
   }
 
-  const restaurantName = settings?.restaurant_name ?? 'Restaurant'
+  const restaurantName = settings?.restaurant_name?.trim() ?? ''
+  const address = settings?.address?.trim()
+  const phone = settings?.phone?.trim()
+  const receiptHeader = settings?.receipt_header?.trim()
+  const receiptFooter = settings?.receipt_footer?.trim()
   const currency = settings?.currency ?? 'Rs.'
 
   const logoUrl = settings?.logo_path ? (
@@ -26,28 +30,46 @@ export function ReceiptPrint({ bill }: ReceiptPrintProps) {
       : `/storage/${settings.logo_path.replace(/^\/+/, '').replace(/^storage\//, '')}`
   ) : null
 
+  const hasName = Boolean(restaurantName)
+  const hasLogo = Boolean(logoUrl)
+
   return (
     <div>
       {/* Screen Preview Card */}
       <div className="space-y-4 text-sm">
         <div className="text-center space-y-1">
-          {logoUrl && (
-            <img src={logoUrl} alt="Logo" className="mx-auto w-1/2 h-auto object-contain mb-3" />
+          {hasLogo && (
+            <div className={cn('flex justify-center', hasName ? 'mb-1.5' : 'mb-3')}>
+              <img
+                src={logoUrl!}
+                alt={restaurantName || 'Logo'}
+                className="w-1/2 h-auto max-h-24 object-contain mx-auto transition-all"
+              />
+            </div>
           )}
-          <h3 className="text-lg font-bold tracking-tight text-foreground">{restaurantName}</h3>
-          {settings?.receipt_header && (
-            <p className="text-xs text-muted-foreground whitespace-pre-line">{settings.receipt_header}</p>
+          {hasName && (
+            <h3 className="text-lg font-bold tracking-tight text-foreground">{restaurantName}</h3>
           )}
-          <div className="pt-1 text-xs font-semibold text-primary">
+          {address && (
+            <p className="text-xs text-muted-foreground whitespace-pre-line leading-snug">{address}</p>
+          )}
+          {phone && (
+            <p className="text-xs text-muted-foreground font-medium">Tel: {phone}</p>
+          )}
+          {receiptHeader && (
+            <p className="text-xs text-muted-foreground/90 whitespace-pre-line pt-0.5 italic">{receiptHeader}</p>
+          )}
+
+          <div className="pt-2 text-xs font-semibold text-primary">
             Invoice: {bill.invoice_number}
           </div>
           {bill.customer_phone && (
             <div className="text-xs text-muted-foreground">
-              Mobile: <span className="font-semibold text-foreground">{bill.customer_phone}</span>
+              Customer Mobile: <span className="font-semibold text-foreground">{bill.customer_phone}</span>
             </div>
           )}
           <div className="text-xs text-muted-foreground">
-            Date: {formatDateTime(bill.created_at)}
+            Date: {bill.bill_date ? `${bill.bill_date} (${formatDateTime(bill.created_at)})` : formatDateTime(bill.created_at)}
           </div>
         </div>
 
@@ -106,11 +128,11 @@ export function ReceiptPrint({ bill }: ReceiptPrintProps) {
           </div>
         </div>
 
-        {settings?.receipt_footer && (
+        {receiptFooter && (
           <>
             <Separator />
             <p className="text-center text-xs text-muted-foreground whitespace-pre-line">
-              {settings.receipt_footer}
+              {receiptFooter}
             </p>
           </>
         )}
@@ -126,15 +148,23 @@ export function ReceiptPrint({ bill }: ReceiptPrintProps) {
       {/* Hidden Thermal Printer DOM Layer for Browser window.print() */}
       <div id="printable-receipt" className="hidden print:block text-black font-mono text-xs leading-tight">
         <div className="text-center mb-2">
-          {logoUrl && (
-            <img src={logoUrl} alt="Logo" className="mx-auto w-1/2 h-auto object-contain mb-2" />
+          {hasLogo && (
+            <div className={`flex justify-center ${hasName ? 'mb-1' : 'mb-2'}`}>
+              <img
+                src={logoUrl!}
+                alt={restaurantName || 'Logo'}
+                className="w-1/2 h-auto object-contain mx-auto"
+              />
+            </div>
           )}
-          <div className="font-bold text-base uppercase">{restaurantName}</div>
-          {settings?.receipt_header && <div className="text-xs whitespace-pre-line">{settings.receipt_header}</div>}
+          {hasName && <div className="font-bold text-base uppercase">{restaurantName}</div>}
+          {address && <div className="text-xs whitespace-pre-line">{address}</div>}
+          {phone && <div className="text-xs font-bold">TEL: {phone}</div>}
+          {receiptHeader && <div className="text-xs whitespace-pre-line my-1 italic">{receiptHeader}</div>}
           <div className="my-1">================================</div>
           <div>INVOICE #: {bill.invoice_number}</div>
-          {bill.customer_phone && <div>MOBILE: {bill.customer_phone}</div>}
-          <div>DATE: {formatDateTime(bill.created_at)}</div>
+          {bill.customer_phone && <div>CUST MOBILE: {bill.customer_phone}</div>}
+          <div>DATE: {bill.bill_date ? `${bill.bill_date} (${formatDateTime(bill.created_at)})` : formatDateTime(bill.created_at)}</div>
           <div>================================</div>
         </div>
 
@@ -182,9 +212,9 @@ export function ReceiptPrint({ bill }: ReceiptPrintProps) {
           </div>
         </div>
 
-        {settings?.receipt_footer && (
+        {receiptFooter && (
           <div className="text-center mt-3 pt-1 border-t border-dashed border-black text-xs whitespace-pre-line">
-            {settings.receipt_footer}
+            {receiptFooter}
           </div>
         )}
       </div>

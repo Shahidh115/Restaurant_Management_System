@@ -3,10 +3,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   Search, Plus, Minus, Trash2, ReceiptText, PauseCircle,
-  Hash, X,
+  Hash, X, Calendar,
 } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { MenuItem, Bill } from '@/types'
+import { todayISO, cn } from '@/lib/utils'
 import { usePosData } from '@/hooks/useData'
 import { useCartStore, cartTotal, type CartLine } from '@/stores/useCartStore'
 import { LoadingBlock, Button, Money } from '@/components/shared'
@@ -19,7 +20,6 @@ import {
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { cn } from '@/lib/utils'
 import { ReceiptPrint } from '@/components/ReceiptPrint'
 
 type SalePayload = {
@@ -27,6 +27,7 @@ type SalePayload = {
   discount: number
   payment_type: string
   customer_phone?: string
+  bill_date?: string
 }
 
 function CategoryTabs({
@@ -116,6 +117,7 @@ export default function PosPage() {
   const [paymentType, setPaymentType] = useState(cart.paymentType)
   const [discount, setDiscount] = useState(cart.discount.toString())
   const [customerPhone, setCustomerPhone] = useState('')
+  const [billDate, setBillDate] = useState(todayISO())
   const [receipt, setReceipt] = useState<Bill | null>(null)
   const [holding, setHolding] = useState<string | null>(null)
 
@@ -261,6 +263,28 @@ export default function PosPage() {
               }}
             />
           </div>
+          <div className="flex items-center gap-1.5 rounded-lg border bg-card px-3 py-1.5 text-sm shadow-sm">
+            <Calendar className="size-4 text-primary" />
+            <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">Bill Date:</span>
+            <input
+              type="date"
+              value={billDate}
+              onChange={(e) => setBillDate(e.target.value)}
+              className="bg-transparent text-sm font-medium text-foreground focus:outline-none cursor-pointer"
+              aria-label="Manual bill date"
+            />
+            {billDate !== todayISO() && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 px-1.5 text-xs text-primary hover:bg-primary/10"
+                onClick={() => setBillDate(todayISO())}
+                title="Reset date to today"
+              >
+                Today
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="mb-3">
@@ -314,7 +338,12 @@ export default function PosPage() {
         <Card className="gap-3 py-4">
           <CardHeader className="px-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Current Order</CardTitle>
+              <div>
+                <CardTitle className="text-base">Current Order</CardTitle>
+                <div className="text-[11px] text-muted-foreground mt-0.5">
+                  Date: <span className="font-semibold text-foreground">{billDate}</span>
+                </div>
+              </div>
               <Badge variant="outline">{cartLines.reduce((s, l) => s + l.quantity, 0)} items</Badge>
             </div>
           </CardHeader>
@@ -441,6 +470,7 @@ export default function PosPage() {
                     discount: discountNum,
                     payment_type: paymentType,
                     customer_phone: customerPhone.trim() || undefined,
+                    bill_date: billDate,
                   })
                 }
               >
@@ -454,6 +484,7 @@ export default function PosPage() {
                     discount: discountNum,
                     payment_type: paymentType,
                     customer_phone: customerPhone.trim() || undefined,
+                    bill_date: billDate,
                   }
                   if (activeHold) completeHoldMutation.mutate({ code: activeHold.hold_code!, payload })
                   else saleMutation.mutate(payload)

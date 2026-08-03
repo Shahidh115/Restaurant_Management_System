@@ -69,6 +69,7 @@ export interface BillItem {
 export interface Bill {
   id: number
   invoice_number: string
+  bill_date?: string
   status: 'completed' | 'hold' | 'cancelled'
   hold_code?: string | null
   subtotal: number
@@ -138,6 +139,11 @@ export interface PosData {
   }[]
   settings: {
     restaurant_name: string
+    logo_path?: string | null
+    address?: string | null
+    phone?: string | null
+    receipt_header?: string | null
+    receipt_footer?: string | null
     currency: string
     tax_rate: number
   }

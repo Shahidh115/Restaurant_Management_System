@@ -79,6 +79,11 @@ class PosController extends Controller
             'resources' => $resources,
             'settings' => [
                 'restaurant_name' => \App\Models\Setting::get('restaurant_name', 'EL CASA'),
+                'logo_path' => \App\Models\Setting::get('logo_path', ''),
+                'address' => \App\Models\Setting::get('address', ''),
+                'phone' => \App\Models\Setting::get('phone', ''),
+                'receipt_header' => \App\Models\Setting::get('receipt_header', ''),
+                'receipt_footer' => \App\Models\Setting::get('receipt_footer', 'Thank you!'),
                 'currency' => \App\Models\Setting::get('currency', '$'),
                 'tax_rate' => (float) \App\Models\Setting::get('tax_rate', 0),
             ],
@@ -200,6 +205,7 @@ class PosController extends Controller
             'payment_type' => ['nullable', 'string', 'in:cash,card,other'],
             'customer_phone' => ['nullable', 'string', 'max:50'],
             'note' => ['nullable', 'string', 'max:500'],
+            'bill_date' => ['nullable', 'date'],
         ]);
 
         return [
@@ -208,6 +214,7 @@ class PosController extends Controller
             'payment_type' => $data['payment_type'] ?? 'cash',
             'customer_phone' => $data['customer_phone'] ?? null,
             'note' => $data['note'] ?? null,
+            'bill_date' => $data['bill_date'] ?? null,
         ];
     }
 }

@@ -82,6 +82,7 @@ class SaleService
                 paymentType: $payload['payment_type'] ?? Bill::PAYMENT_CASH,
                 customerPhone: $payload['customer_phone'] ?? null,
                 note: $payload['note'] ?? null,
+                date: $payload['bill_date'] ?? null,
             );
         });
     }
@@ -121,6 +122,7 @@ class SaleService
                 customerPhone: $payload['customer_phone'] ?? null,
                 note: $payload['note'] ?? null,
                 existingBill: $bill,
+                date: $payload['bill_date'] ?? ($bill->bill_date ? \Illuminate\Support\Carbon::parse($bill->bill_date)->toDateString() : null),
             );
         });
     }
@@ -269,7 +271,7 @@ class SaleService
 
     private function deductResources(Bill $bill): void
     {
-        $date = now()->toDateString();
+        $date = $bill->bill_date ? \Illuminate\Support\Carbon::parse($bill->bill_date)->toDateString() : now()->toDateString();
 
         $consumption = [];
 

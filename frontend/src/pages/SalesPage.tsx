@@ -120,7 +120,10 @@ export default function SalesPage() {
                 {data.items.map((bill) => (
                   <TableRow key={bill.id} className={bill.status === 'cancelled' ? 'opacity-60' : ''}>
                     <TableCell className="font-medium">{bill.invoice_number}</TableCell>
-                    <TableCell className="text-muted-foreground">{formatDateTime(bill.created_at)}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      <span className="font-medium text-foreground">{bill.bill_date}</span>
+                      <span className="ml-1 text-xs text-muted-foreground">({formatDateTime(bill.created_at)})</span>
+                    </TableCell>
                     <TableCell className="tabular-nums">{bill.item_count}</TableCell>
                     <TableCell><Money value={bill.total} /></TableCell>
                     <TableCell className="capitalize text-muted-foreground">{bill.payment_type}</TableCell>
